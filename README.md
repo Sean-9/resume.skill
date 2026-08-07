@@ -116,13 +116,13 @@
 **Claude Code — 全局，所有项目可用**
 
 ```bash
-git clone https://github.com/Sean-9/resume-skill.git ~/.claude/skills/resume
+git clone https://github.com/Sean-9/resume.skill.git ~/.claude/skills/resume
 ```
 
 **Claude Code — 仅当前项目**
 
 ```bash
-git clone https://github.com/Sean-9/resume-skill.git .claude/skills/resume
+git clone https://github.com/Sean-9/resume.skill.git .claude/skills/resume
 ```
 
 **其他 Agent**：把 `SKILL.md` 与 `profile-schema.md` 放入对应的 skills 目录。
