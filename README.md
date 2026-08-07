@@ -1,6 +1,6 @@
 <div align="center">
 
-# resume.skill
+# 简历一条龙：resume.skill
 
 ### 整理经历、生成简历、模拟面试追问、回改简历定稿
 
