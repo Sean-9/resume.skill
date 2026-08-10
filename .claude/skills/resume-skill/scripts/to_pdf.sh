@@ -12,18 +12,25 @@ set -euo pipefail
 
 input="${1:?用法: to_pdf.sh <输入.docx> [输出.pdf]}"
 
-# --- 解析脚本所在目录，定位随包字体 ---
+# --- 解析脚本所在目录，定位随包字体（.otf 或 .ttc 均可，脚本自动探测） ---
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-font="$script_dir/../assets/NotoSansCJKsc-Regular.otf"
+assets_dir="$script_dir/../assets"
+font=""
+for candidate in "$assets_dir/NotoSansCJKsc-Regular.otf" "$assets_dir/NotoSansCJK-Regular.ttc"; do
+    if [ -f "$candidate" ]; then
+        font="$candidate"
+        break
+    fi
+done
 
 # --- 把随包字体装进用户字体目录，供 LibreOffice 使用 ---
-if [ -f "$font" ]; then
+if [ -n "$font" ]; then
     case "$(uname -s)" in
         Darwin)              font_dir="$HOME/Library/Fonts" ;;
         MINGW*|MSYS*|CYGWIN*) font_dir="${LOCALAPPDATA:-$HOME/AppData/Local}/Microsoft/Windows/Fonts" ;;
         *)                   font_dir="$HOME/.local/share/fonts" ;;
     esac
-    if [ ! -f "$font_dir/NotoSansCJKsc-Regular.otf" ]; then
+    if [ ! -f "$font_dir/$(basename "$font")" ]; then
         mkdir -p "$font_dir"
         cp "$font" "$font_dir/"
         command -v fc-cache >/dev/null 2>&1 && fc-cache -f >/dev/null 2>&1 || true

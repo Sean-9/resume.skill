@@ -1,2 +1,7 @@
 # 本机配置不入库；.claude/skills/ 下的 skill 内容需入库
 .claude/settings.local.json
+
+# 个人求职产出与素材不入库
+jobsearch/
+*简历.pdf
+

@@ -130,12 +130,15 @@ cp -r resume.skill-src/.claude/skills/resume-skill .claude/skills/
 
 **其他 Agent**：把 `.claude/skills/resume-skill/` 整个目录放入对应的 skills 目录——SKILL.md、profile-schema.md、scripts/、schema/、assets/ 要一起，缺了 Phase 6 渲染会断。
 
-PDF 导出依赖 LibreOffice：
+**运行依赖**：
 
 ```bash
-brew install --cask libreoffice      # macOS
-sudo apt install libreoffice         # Ubuntu
+pip install python-docx          # render.py / to_text.py 用
+brew install --cask libreoffice  # macOS，to_pdf.sh 用
+sudo apt install libreoffice     # Ubuntu，to_pdf.sh 用
 ```
+
+随包字体在 `assets/`（Noto Sans CJK，`.otf` 或 `.ttc` 均可，脚本自动探测），PDF 离线渲染不缺字。
 
 ---
 
