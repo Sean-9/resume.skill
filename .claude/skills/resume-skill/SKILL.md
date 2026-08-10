@@ -366,6 +366,7 @@ JD 存档到 `./jobsearch/jd/{slug}.md`，供 interview.skill 复用。
 | 动词优先级 | 主导/设计/搭建 > 负责/参与/协助。**但只有 decision 槽位非空的素材才配用主导类动词** |
 | 结构 | 动作 + 方法 + 结果，一句话讲完，不超过两行 |
 | 关键词 | JD 黑话要出现，但用用户自己的经历语言表达，不生搬 JD 原句 |
+| 论文/项目标题 | **条目标题用短中文名（≤20 字）**，如「跨模态蒸馏的最佳视点选择」；80 字符英文标题必须降级到 `note` 附注行，不得占标题行 |
 | 禁止 | 形容词堆砌（"高效""优秀""深入"）、无主语句、"负责相关工作" |
 
 ### 硬校验（Phase 5 结束前必须跑）
@@ -385,20 +386,27 @@ JD 存档到 `./jobsearch/jd/{slug}.md`，供 interview.skill 复用。
 
 ```
 scripts/render.py      JSON → docx（python-docx，模板 assets/template.docx）
-scripts/to_pdf.sh      docx → pdf（libreoffice --headless --convert-to pdf）
+scripts/to_pdf.sh      docx → pdf（优先 libreoffice headless；缺 LibreOffice 时降级用 render_pdf.py）
+scripts/render_pdf.py  JSON → pdf（pymupdf 手动排版，版式与 docx 同源）
 scripts/to_text.py     JSON → 纯文本（BOSS 直聘等平台粘贴用，去掉所有格式符号）
 schema/resume.schema.json
+assets/typography.md   ★ 版面规范，渲染的唯一样式来源，改 render 脚本前必须先读
 assets/NotoSansCJKsc-Regular.otf
 ```
+
+**版式唯一来源**：docx 与 pymupdf 两个 renderer 共用同一套数值（`assets/typography.md`）：中英同源字体、三级字号（H2 14 / H3 11.5 / 正文 10）、三档间距（章节 6.5 / 条目 2.5 / bullet 1.0）、日期右对齐到右边界、拉丁词不在词中断行、论文标题用短中文名 + 英文全称放 `note` 附注行。**改任何 render 脚本前先读 typography.md，两端数值必须一致，否则每次生成的观感都不一样。**
 
 **运行依赖**（缺了 render/to_pdf 会直接报错，先装好）：
 
 ```bash
 pip install python-docx          # render.py 与 to_text.py 共用的 docx 库
-# to_pdf.sh 依赖 LibreOffice：macOS: brew install --cask libreoffice；Ubuntu: sudo apt install libreoffice
+pip install pymupdf              # render_pdf.py 用（to_pdf.sh 的降级路径）
+# to_pdf.sh 优先依赖 LibreOffice：macOS: brew install --cask libreoffice；Ubuntu: sudo apt install libreoffice
 ```
 
 **字体文件**：`assets/` 下的 Noto Sans CJK 字体名可以是 `NotoSansCJKsc-Regular.otf` 或 `NotoSansCJK-Regular.ttc`，脚本会自动探测。docx 内部按字体名（`Noto Sans CJK SC`）引用，文件名变了不影响渲染。
+
+**条目结构**：JSON 条目的 `title` 用短中文名（论文/项目 ≤20 字），英文全称或次要说明放 `note` 字段（渲染为 9pt 灰色附注行），`dates` 右对齐，`bullets` 为要点列表。字段契约见 `schema/resume.schema.json`。
 
 四种格式全部产出。纯文本版单独优化：无表格、无制表符、段落间空行分隔，直接粘贴不乱。
 

@@ -78,6 +78,10 @@
           "type": "string",
           "description": "时间范围，如「2023.06 - 至今」"
         },
+        "note": {
+          "type": "string",
+          "description": "附注（渲染为 9pt 灰色缩进行）：英文全称、次要说明等，如论文条目的完整英文标题"
+        },
         "bullets": {
           "type": "array",
           "description": "简历要点，必须是 Phase 3 素材池内放行过的内容",

@@ -40,6 +40,8 @@ def build_lines(data):
                 if item.get("dates"):
                     header += " | " + item["dates"]
                 lines.append(header)
+                if item.get("note"):
+                    lines.append(item["note"])
                 for bullet in item.get("bullets", []):
                     lines.append(bullet)
             lines.append("")

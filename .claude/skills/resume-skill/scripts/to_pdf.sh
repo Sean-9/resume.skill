@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
-# docx → pdf（依赖 LibreOffice headless）。
+# docx → pdf。
 #
 # 用法：
 #     bash to_pdf.sh <输入.docx> [输出.pdf]
 #
-# 会自动把随包字体 assets/NotoSansCJKsc-Regular.otf 复制到当前用户的字体目录，
+# 依赖链：
+#   1. 优先用 LibreOffice headless 转换（观感与 Word 最接近）；
+#   2. 若本机没有 LibreOffice，自动降级：当输入 docx 同目录存在同名 .json 时，
+#      调用 scripts/render_pdf.py（pymupdf）直接从 JSON 渲染 PDF，版式同 typography.md。
+#
+# 会自动把随包字体 assets/ 下的 Noto 字体复制到当前用户的字体目录，
 # 保证 PDF 中文不缺字（复用 Common Pitfalls #3 的离线字体方案）。
 # macOS: brew install --cask libreoffice；Ubuntu: sudo apt install libreoffice
+# 降级依赖：python3 + pymupdf
 
 set -euo pipefail
 
 input="${1:?用法: to_pdf.sh <输入.docx> [输出.pdf]}"
+output="${2:-}"
 
 # --- 解析脚本所在目录，定位随包字体（.otf 或 .ttc 均可，脚本自动探测） ---
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -45,23 +52,28 @@ for c in libreoffice soffice; do
         break
     fi
 done
-if [ -z "$SOFFICE" ]; then
-    echo "错误：未找到 LibreOffice（libreoffice/soffice）。" >&2
-    echo "  macOS: brew install --cask libreoffice" >&2
-    echo "  Ubuntu: sudo apt install libreoffice" >&2
-    exit 1
-fi
 
 outdir="$(dirname "$input")"
 [ -d "$outdir" ] || outdir="."
+json="${input%.docx}.json"
+dest="${output:-${input%.docx}.pdf}"
 
-# LibreOffice 会把同名 PDF 写到 --outdir
-"$SOFFICE" --headless --convert-to pdf --outdir "$outdir" "$input" >/dev/null
-
-generated="${input%.docx}.pdf"
-if [ "$#" -ge 2 ]; then
-    mv "$generated" "$2"
-    echo "已生成 $2"
+if [ -n "$SOFFICE" ]; then
+    # LibreOffice 会把同名 PDF 写到 --outdir
+    "$SOFFICE" --headless --convert-to pdf --outdir "$outdir" "$input" >/dev/null
+    generated="${input%.docx}.pdf"
+    if [ "$generated" != "$dest" ]; then
+        mv "$generated" "$dest"
+    fi
+    echo "已生成 $dest"
 else
-    echo "已生成 $generated"
+    if [ ! -f "$json" ]; then
+        echo "错误：未找到 LibreOffice（libreoffice/soffice），且同目录无 $json 可降级。" >&2
+        echo "  macOS: brew install --cask libreoffice" >&2
+        echo "  Ubuntu: sudo apt install libreoffice" >&2
+        echo "  或直接用 render_pdf.py：python \"$script_dir/render_pdf.py\" <简历.json> <输出.pdf>" >&2
+        exit 1
+    fi
+    echo "警告：未找到 LibreOffice，降级用 render_pdf.py（pymupdf）从 JSON 渲染。" >&2
+    python "$script_dir/render_pdf.py" "$json" "$dest" --font "$font"
 fi

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 简历一条龙：resume.skill
+<h1 style="font-size: 3em; line-height: 1.2; margin: 0 0 8px;">简历一条龙：resume.skill</h1>
 
 ### 整理经历、生成简历、模拟面试追问、回改简历定稿
 
@@ -134,9 +134,12 @@ cp -r resume.skill-src/.claude/skills/resume-skill .claude/skills/
 
 ```bash
 pip install python-docx          # render.py / to_text.py 用
-brew install --cask libreoffice  # macOS，to_pdf.sh 用
-sudo apt install libreoffice     # Ubuntu，to_pdf.sh 用
+pip install pymupdf              # render_pdf.py 用（to_pdf.sh 的降级路径）
+brew install --cask libreoffice  # macOS，to_pdf.sh 用（可选的 PDF 渲染路径）
+sudo apt install libreoffice     # Ubuntu，to_pdf.sh 用（可选的 PDF 渲染路径）
 ```
+
+PDF 渲染有两条路：装了 LibreOffice 就走 `to_pdf.sh`（docx→pdf，观感最接近 Word）；没装则自动降级为 `render_pdf.py`（pymupdf 直接从 JSON 排版）。两条路共用同一套版面数值（`assets/typography.md`：中英同源字体、三级字号、三档间距、日期右对齐、拉丁词不断行），产出观感一致。
 
 随包字体在 `assets/`（Noto Sans CJK，`.otf` 或 `.ttc` 均可，脚本自动探测），PDF 离线渲染不缺字。
 
