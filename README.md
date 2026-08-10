@@ -111,19 +111,24 @@
 
 ## 安装
 
+仓库自带 `.claude/skills/resume-skill/` 完整 skill 目录（SKILL.md、profile-schema.md、scripts/、schema/、assets/ 一体）。
+
 **Claude Code — 全局，所有项目可用**
 
 ```bash
-git clone https://github.com/Sean-9/resume.skill.git ~/.claude/skills/resume
+git clone https://github.com/Sean-9/resume.skill.git resume.skill-src
+cp -r resume.skill-src/.claude/skills/resume-skill ~/.claude/skills/
 ```
 
 **Claude Code — 仅当前项目**
 
 ```bash
-git clone https://github.com/Sean-9/resume.skill.git .claude/skills/resume
+git clone https://github.com/Sean-9/resume.skill.git resume.skill-src
+mkdir -p .claude/skills
+cp -r resume.skill-src/.claude/skills/resume-skill .claude/skills/
 ```
 
-**其他 Agent**：把 `SKILL.md` 与 `profile-schema.md` 放入对应的 skills 目录。
+**其他 Agent**：把 `.claude/skills/resume-skill/` 整个目录放入对应的 skills 目录——SKILL.md、profile-schema.md、scripts/、schema/、assets/ 要一起，缺了 Phase 6 渲染会断。
 
 PDF 导出依赖 LibreOffice：
 
@@ -191,7 +196,13 @@ sudo apt install libreoffice         # Ubuntu
 
 ## 衔接模拟面试
 
-与 `interview.skill` 共用经历库，简历定稿后可直接进入面试演练。
+与 `interview.skill` 共用经历库，简历定稿后可直接进入面试演练。联动 skill 仓库：[Sean-9/MockInterview](https://github.com/Sean-9/MockInterview)（skill 名 `MockInterview.skill`）。
+
+本 skill 启动时自动检查本机是否已安装该联动 skill；未安装则自动拉取：
+
+```bash
+git clone https://github.com/Sean-9/MockInterview.git ~/.claude/skills/mockinterview
+```
 
 ```
 resume.skill                          interview.skill

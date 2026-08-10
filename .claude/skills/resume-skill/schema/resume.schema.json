@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Sean-9/resume.skill/blob/main/.claude/skills/resume-skill/schema/resume.schema.json",
+  "title": "简历 JSON",
+  "description": "Phase 6 渲染阶段的简历数据契约。模型产出该结构的 JSON，由 scripts/render.py 渲染 docx、scripts/to_text.py 渲染纯文本。",
+  "type": "object",
+  "required": ["name", "sections"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "姓名"
+    },
+    "positioning": {
+      "type": "string",
+      "description": "一句话定位：我是谁、能干什么（八秒排序第 1 行）"
+    },
+    "contact": {
+      "type": "object",
+      "description": "联系方式，全部可选，按存在字段拼成一行",
+      "properties": {
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "wechat": { "type": "string" },
+        "city": { "type": "string" },
+        "github": { "type": "string" },
+        "portfolio": { "type": "string", "description": "作品集 / 博客链接" }
+      },
+      "additionalProperties": false
+    },
+    "sections": {
+      "type": "array",
+      "description": "分节列表，渲染时按数组顺序自上而下",
+      "items": { "$ref": "#/$defs/section" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "section": {
+      "type": "object",
+      "required": ["type", "title", "items"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["skills", "experience", "education", "projects", "honors", "other"],
+          "description": "分节类型：skills 的 items 为字符串；其余分节的 items 为条目对象"
+        },
+        "title": {
+          "type": "string",
+          "description": "分节标题，如「技能」「工作经历」「教育背景」"
+        },
+        "items": {
+          "type": "array",
+          "description": "skills 分节为字符串数组；其余为 entry 数组",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/entry" },
+              { "type": "string" }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "description": "带标题行的条目，如一段经历、一个项目、一条教育背景",
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "公司名 / 学校名 / 项目名"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "职位 / 专业 / 项目角色"
+        },
+        "dates": {
+          "type": "string",
+          "description": "时间范围，如「2023.06 - 至今」"
+        },
+        "bullets": {
+          "type": "array",
+          "description": "简历要点，必须是 Phase 3 素材池内放行过的内容",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
