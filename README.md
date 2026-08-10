@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1 style="font-size: 3em; line-height: 1.2; margin: 0 0 8px;">简历一条龙：resume.skill</h1>
+<h1 style="font-size: 4em; line-height: 1.2; margin: 0 0 8px;">简历一条龙：resume.skill</h1>
 
 ### 整理经历、生成简历、模拟面试追问、回改简历定稿
 
